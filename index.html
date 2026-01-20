@@ -1,12 +1,145 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <title>Toko Buku Ririn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 30px;
+        }
+        .container {
+            background: #fff;
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .toggle {
+            text-align: center;
+            margin-top: 10px;
+            cursor: pointer;
+            color: blue;
+        }
+        .message {
+            text-align: center;
+            margin-top: 10px;
+            color: red;
+        }
+    </style>
 </head>
 <body>
 
+<div class="container">
     <h1>📚 Toko Buku Ririn</h1>
+
+    <!-- LOGIN -->
+    <div id="loginBox">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p class="toggle" onclick="showRegister()">Belum punya akun? Register</p>
+        <p id="loginMessage" class="message"></p>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerBox" style="display:none;">
+        <h2>Register</h2>
+        <form id="registerForm">
+            <input type="text" id="regName" placeholder="Nama" required>
+            <input type="email" id="regEmail" placeholder="Email" required>
+            <input type="password" id="regPassword" placeholder="Password" required>
+            <button type="submit">Register</button>
+        </form>
+        <p class="toggle" onclick="showLogin()">Sudah punya akun? Login</p>
+        <p id="registerMessage" class="message"></p>
+    </div>
+</div>
+
+<script>
+function showRegister() {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("registerBox").style.display = "block";
+}
+
+function showLogin() {
+    document.getElementById("registerBox").style.display = "none";
+    document.getElementById("loginBox").style.display = "block";
+}
+
+// LOGIN
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const response = await fetch("https://penadanaksara.my.id/api/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            email: document.getElementById("loginEmail").value,
+            password: document.getElementById("loginPassword").value
+        })
+    });
+
+    const data = await response.json();
+    document.getElementById("loginMessage").innerText = data.message || "Login berhasil";
+
+    if (response.ok) {
+        localStorage.setItem("user", JSON.stringify(data));
+    }
+});
+
+// REGISTER
+document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const response = await fetch("https://penadanaksara.my.id/api/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            name: document.getElementById("regName").value,
+            email: document.getElementById("regEmail").value,
+            password: document.getElementById("regPassword").value
+        })
+    });
+
+    const data = await response.json();
+    document.getElementById("registerMessage").innerText = data.message || "Registrasi berhasil";
+
+    if (response.ok) {
+        showLogin();
+    }
+});
+</script>
 
 </body>
 </html>
